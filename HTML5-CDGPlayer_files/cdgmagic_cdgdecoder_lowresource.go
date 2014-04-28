@@ -86,6 +86,9 @@ var (
 
 	internal_border_dirty = false
 	internal_screen_dirty = false
+
+	//for image counting
+	imageCount = 0
 )
 
 func init() {
@@ -105,16 +108,21 @@ func main() {
 	fmt.Println("File Length: ", len(cdg_file_data))
 
 	//loop through some bytes
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 20000; i++ {
 		decode_packs(cdg_file_data, i)
 		redrawCanvas()
+		if i%500 == 0 {
+			snap(i)
+		}
 	}
 
-	snap()
+	//This command works, outputting the images as a video
+	//ffmpeg.exe -r 1/5 -i blank-%d.png -c:v libx264 -r 30 -pix_fmt yuv420p out.mp4
+
 }
 
-func snap() {
-	out_filename := "output/blank.png"
+func snap(count int) {
+	out_filename := fmt.Sprintf("output/blank-%d.png", imageCount)
 	out_file, err := os.Create(out_filename)
 	if err != nil {
 		log.Fatal(err)
@@ -122,6 +130,7 @@ func snap() {
 	defer out_file.Close()
 	log.Print("Saving image to: ", out_filename)
 	png.Encode(out_file, internal_rgba_context)
+	imageCount++
 }
 
 func resetCDGState() {
