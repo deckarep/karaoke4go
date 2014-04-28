@@ -3,6 +3,10 @@ package main
 import (
 	"fmt"
 	"image"
+	"image/png"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 /*
@@ -76,7 +80,7 @@ var (
 	internal_usedirtyrect   = true
 
 	internal_border_index = byte(0x00) // The current border palette index.
-	internal_current_pack = byte(0x00)
+	internal_current_pack = 0x00
 
 	internal_border_dirty = false
 	internal_screen_dirty = false
@@ -89,6 +93,29 @@ func init() {
 func main() {
 
 	fmt.Println("Compiles baby!")
+
+	cdg_file_data, err := ioutil.ReadFile("../SC-SBI-REMIX - Billy Idol - Rebel Yell.cdg")
+	if err != nil {
+		log.Fatal("Couldn't read .cdg file")
+	}
+
+	for i := 0; i < 19000; i++ {
+		decode_packs(cdg_file_data, i)
+		redrawCanvas()
+	}
+
+	snap()
+}
+
+func snap() {
+	out_filename := "blank.png"
+	out_file, err := os.Create(out_filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer out_file.Close()
+	log.Print("Saving image to: ", out_filename)
+	png.Encode(out_file, internal_rgba_context)
 }
 
 func resetCDGState() {
@@ -176,7 +203,7 @@ func redrawCanvas() {
 }
 
 // Decode to pack playback_position, using cdg_file_data.
-func decode_packs(cdg_file_data []byte, playback_position byte) {
+func decode_packs(cdg_file_data []byte, playback_position int) {
 
 	for curr_pack := internal_current_pack; curr_pack < playback_position; curr_pack++ {
 
