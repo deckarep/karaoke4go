@@ -290,17 +290,20 @@ func render_screen_to_rgb() {
 
 			curr_line_indices = internal_vram[vram_loc] // Get the current line segment indices.
 			vram_loc++
-			curr_rgb = internal_palette[(curr_line_indices>>000)&0x0F]  // Get the RGB value for pixel 0.
+
+			curr_rgb = internal_palette[(curr_line_indices>>000)&0x0F] // Get the RGB value for pixel 0.
+
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 0.
 			rgb_loc++
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 0.
 			rgb_loc++
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 0.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = 0xFF
-			rgb_loc++ // Set alpha value (fully opaque) for pixel 0.
+			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 0.
+			rgb_loc++
 
-			curr_rgb = internal_palette[(curr_line_indices>>004)&0x0F]  // Get the RGB value for pixel 1.
+			curr_rgb = internal_palette[(curr_line_indices>>004)&0x0F] // Get the RGB value for pixel 1.
+
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 1.
 			rgb_loc++
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 1.
@@ -309,6 +312,7 @@ func render_screen_to_rgb() {
 			rgb_loc++
 			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 1.
 			rgb_loc++
+
 			curr_rgb = internal_palette[(curr_line_indices>>010)&0x0F] // Get the RGB value for pixel 2.
 
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 2.
@@ -317,10 +321,11 @@ func render_screen_to_rgb() {
 			rgb_loc++
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 2.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = 0xFF
-			rgb_loc++ // Set alpha value (fully opaque) for pixel 2.
+			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 2.
+			rgb_loc++
 
-			curr_rgb = internal_palette[(curr_line_indices>>014)&0x0F]  // Get the RGB value for pixel 3.
+			curr_rgb = internal_palette[(curr_line_indices>>014)&0x0F] // Get the RGB value for pixel 3.
+
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 3.
 			rgb_loc++
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 3.
@@ -330,17 +335,19 @@ func render_screen_to_rgb() {
 			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 3.
 			rgb_loc++
 
-			curr_rgb = internal_palette[(curr_line_indices>>020)&0x0F]  // Get the RGB value for pixel 4.
+			curr_rgb = internal_palette[(curr_line_indices>>020)&0x0F] // Get the RGB value for pixel 4.
+
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 4.
 			rgb_loc++
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 4.
 			rgb_loc++
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 4.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = 0xFF
-			rgb_loc++ // Set alpha value (fully opaque) for pixel 4.
+			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 4.
+			rgb_loc++
 
-			curr_rgb = internal_palette[(curr_line_indices>>024)&0x0F]  // Get the RGB value for pixel 5.
+			curr_rgb = internal_palette[(curr_line_indices>>024)&0x0F] // Get the RGB value for pixel 5.
+
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 5.
 			rgb_loc++
 			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 5.
@@ -349,6 +356,7 @@ func render_screen_to_rgb() {
 			rgb_loc++
 			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 5.
 			rgb_loc++
+
 			// Or, instead, index 0 could be set transparent to show background image/video.
 			// Alternately, SET_TRANSPARENT instruction could be implemented to set 6bit transparency.
 			// Unfortunately, I don't think many (any?) discs bother to set it :-/...
