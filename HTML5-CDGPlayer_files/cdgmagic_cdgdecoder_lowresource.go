@@ -73,7 +73,8 @@ const (
 )
 
 var (
-	internal_palette        = make([]byte, PALETTE_ENTRIES)
+	//I think they should probably be 32 bit colors based on the proc_LOAD_CLUT function
+	internal_palette        = make([]int, PALETTE_ENTRIES)
 	internal_vram           = make([]byte, NUM_X_FONTS*VRAM_HEIGHT)
 	internal_dirty_blocks   = make([]byte, 900)
 	internal_rgba_context   = image.NewRGBA(image.Rect(0, 0, VISIBLE_WIDTH, VISIBLE_HEIGHT))
@@ -102,7 +103,7 @@ func main() {
 	}
 
 	//loop through some bytes
-	for i := 0; i < 19000; i++ {
+	for i := 0; i < 30000; i++ {
 		decode_packs(cdg_file_data, i)
 		redrawCanvas()
 	}
@@ -277,7 +278,7 @@ func render_screen_to_rgb() {
 
 	vram_loc := 601                 // Offset into VRAM array.
 	rgb_loc := 0x00                 // Offset into RGBA array.
-	curr_rgb := byte(0x00)          // RGBA value of current pixel.
+	curr_rgb := 0x00                // RGBA value of current pixel.
 	curr_line_indices := byte(0x00) // Packed font row index values.
 
 	for y_pxl := 0; y_pxl < vis_height; y_pxl++ {
@@ -292,68 +293,68 @@ func render_screen_to_rgb() {
 
 			curr_rgb = internal_palette[(curr_line_indices>>000)&0x0F] // Get the RGB value for pixel 0.
 
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 0.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 0.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 0.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 0.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 0.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 0.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 0.
+			internal_rgba_imagedata[rgb_loc] = byte(0xFF) // Set alpha value (fully opaque) for pixel 0.
 			rgb_loc++
 
 			curr_rgb = internal_palette[(curr_line_indices>>004)&0x0F] // Get the RGB value for pixel 1.
 
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 1.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 1.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 1.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 1.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 1.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 1.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 1.
+			internal_rgba_imagedata[rgb_loc] = byte(0xFF) // Set alpha value (fully opaque) for pixel 1.
 			rgb_loc++
 
 			curr_rgb = internal_palette[(curr_line_indices>>010)&0x0F] // Get the RGB value for pixel 2.
 
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 2.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 2.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 2.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 2.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 2.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 2.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 2.
+			internal_rgba_imagedata[rgb_loc] = byte(0xFF) // Set alpha value (fully opaque) for pixel 2.
 			rgb_loc++
 
 			curr_rgb = internal_palette[(curr_line_indices>>014)&0x0F] // Get the RGB value for pixel 3.
 
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 3.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 3.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 3.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 3.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 3.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 3.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 3.
+			internal_rgba_imagedata[rgb_loc] = byte(0xFF) // Set alpha value (fully opaque) for pixel 3.
 			rgb_loc++
 
 			curr_rgb = internal_palette[(curr_line_indices>>020)&0x0F] // Get the RGB value for pixel 4.
 
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 4.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 4.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 4.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 4.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 4.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 4.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 4.
+			internal_rgba_imagedata[rgb_loc] = byte(0xFF) // Set alpha value (fully opaque) for pixel 4.
 			rgb_loc++
 
 			curr_rgb = internal_palette[(curr_line_indices>>024)&0x0F] // Get the RGB value for pixel 5.
 
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 5.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 5.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 5.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 5.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 5.
+			internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 5.
 			rgb_loc++
-			internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 5.
+			internal_rgba_imagedata[rgb_loc] = byte(0xFF) // Set alpha value (fully opaque) for pixel 5.
 			rgb_loc++
 
 			// Or, instead, index 0 could be set transparent to show background image/video.
@@ -373,64 +374,64 @@ func render_block_to_rgb(x_start, y_start int) {
 	rgb_loc *= 4                                           // RGBA, 1 pxl = 4 bytes.
 
 	rgb_inc := (VISIBLE_WIDTH - FONT_WIDTH) * 4
-	curr_rgb := byte(0x00)          // RGBA value of current pixel.
+	curr_rgb := 0x00                // RGBA value of current pixel.
 	curr_line_indices := byte(0x00) // Packed font row index values.
 
 	for vram_loc < vram_end {
-		curr_line_indices = internal_vram[vram_loc]                 // Get the current line segment indices.
-		curr_rgb = internal_palette[(curr_line_indices>>000)&0x0F]  // Get the RGB value for pixel 0.
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 0.
+		curr_line_indices = internal_vram[vram_loc]                       // Get the current line segment indices.
+		curr_rgb = internal_palette[(curr_line_indices>>000)&0x0F]        // Get the RGB value for pixel 0.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 0.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 0.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 0.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 0.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 0.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = 0xFF
-		rgb_loc++                                                   // Set alpha value (fully opaque) for pixel 0.
-		curr_rgb = internal_palette[(curr_line_indices>>004)&0x0F]  // Get the RGB value for pixel 1.
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 1.
+		internal_rgba_imagedata[rgb_loc] = byte(0xFF)
+		rgb_loc++                                                         // Set alpha value (fully opaque) for pixel 0.
+		curr_rgb = internal_palette[(curr_line_indices>>004)&0x0F]        // Get the RGB value for pixel 1.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 1.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 1.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 1.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 1.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 1.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = 0xFF
-		rgb_loc++                                                   // Set alpha value (fully opaque) for pixel 1.
-		curr_rgb = internal_palette[(curr_line_indices>>010)&0x0F]  // Get the RGB value for pixel 2.
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 2.
+		internal_rgba_imagedata[rgb_loc] = byte(0xFF)
+		rgb_loc++                                                         // Set alpha value (fully opaque) for pixel 1.
+		curr_rgb = internal_palette[(curr_line_indices>>010)&0x0F]        // Get the RGB value for pixel 2.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 2.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 2.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 2.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 2.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 2.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = 0xFF
-		rgb_loc++                                                   // Set alpha value (fully opaque) for pixel 2.
-		curr_rgb = internal_palette[(curr_line_indices>>014)&0x0F]  // Get the RGB value for pixel 3.
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 3.
+		internal_rgba_imagedata[rgb_loc] = byte(0xFF)
+		rgb_loc++                                                         // Set alpha value (fully opaque) for pixel 2.
+		curr_rgb = internal_palette[(curr_line_indices>>014)&0x0F]        // Get the RGB value for pixel 3.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 3.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 3.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 3.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 3.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 3.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = 0xFF
-		rgb_loc++                                                   // Set alpha value (fully opaque) for pixel 3.
-		curr_rgb = internal_palette[(curr_line_indices>>020)&0x0F]  // Get the RGB value for pixel 4.
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 4.
+		internal_rgba_imagedata[rgb_loc] = byte(0xFF)
+		rgb_loc++                                                         // Set alpha value (fully opaque) for pixel 3.
+		curr_rgb = internal_palette[(curr_line_indices>>020)&0x0F]        // Get the RGB value for pixel 4.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 4.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 4.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 4.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 4.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 4.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = 0xFF
-		rgb_loc++                                                   // Set alpha value (fully opaque) for pixel 4.
-		curr_rgb = internal_palette[(curr_line_indices>>024)&0x0F]  // Get the RGB value for pixel 5.
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 020) & 0xFF // Set red value for pixel 5.
+		internal_rgba_imagedata[rgb_loc] = byte(0xFF)
+		rgb_loc++                                                         // Set alpha value (fully opaque) for pixel 4.
+		curr_rgb = internal_palette[(curr_line_indices>>024)&0x0F]        // Get the RGB value for pixel 5.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 020) & 0xFF) // Set red value for pixel 5.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 010) & 0xFF // Set green value for pixel 5.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 010) & 0xFF) // Set green value for pixel 5.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = (curr_rgb >> 000) & 0xFF // Set blue value for pixel 5.
+		internal_rgba_imagedata[rgb_loc] = byte((curr_rgb >> 000) & 0xFF) // Set blue value for pixel 5.
 		rgb_loc++
-		internal_rgba_imagedata[rgb_loc] = 0xFF // Set alpha value (fully opaque) for pixel 5.
+		internal_rgba_imagedata[rgb_loc] = byte(0xFF) // Set alpha value (fully opaque) for pixel 5.
 		rgb_loc++
 		// Or, instead, index 0 could be set transparent to show background image/video.
 		// Alternately, SET_TRANSPARENT instruction could be implemented to set 6bit transparency.
@@ -459,6 +460,7 @@ func proc_MEMORY_PRESET(cdg_pack []byte) {
 	clearVRAM(cdg_pack[4] & 0x3F)
 }
 
+//Verified function works accordingly per JS version.
 func proc_LOAD_CLUT(cdg_pack []byte) {
 
 	// If instruction is 0x1E then 8*0=0, if 0x1F then 8*1=8 for offset.
@@ -466,16 +468,16 @@ func proc_LOAD_CLUT(cdg_pack []byte) {
 	// Step through the eight color indices, setting the RGB values.
 	for pal_inc := 0; pal_inc < 8; pal_inc++ {
 		temp_idx := pal_inc + pal_offset
-		temp_rgb := byte(0x00000000)
-		temp_entry := byte(0x00000000)
+		temp_rgb := 0x00000000
+		temp_entry := 0x00000000
 		// Set red.
-		temp_entry = (cdg_pack[pal_inc*2+4] & 0x3C) >> 2
+		temp_entry = (int(cdg_pack[pal_inc*2+4]) & 0x3C) >> 2
 		temp_rgb |= (temp_entry * 17) << 020
 		// Set green.
-		temp_entry = ((cdg_pack[pal_inc*2+4] & 0x03) << 2) | ((cdg_pack[pal_inc*2+5] & 0x30) >> 4)
+		temp_entry = ((int(cdg_pack[pal_inc*2+4]) & 0x03) << 2) | ((int(cdg_pack[pal_inc*2+5]) & 0x30) >> 4)
 		temp_rgb |= (temp_entry * 17) << 010
 		// Set blue.
-		temp_entry = cdg_pack[pal_inc*2+5] & 0x0F
+		temp_entry = int(cdg_pack[pal_inc*2+5]) & 0x0F
 		temp_rgb |= (temp_entry * 17) << 000
 
 		// Put the full RGB value into the index position, but only if it's different.
@@ -488,13 +490,9 @@ func proc_LOAD_CLUT(cdg_pack []byte) {
 			} // The border color has changed.
 		}
 	}
-
-	fmt.Println(internal_palette)
 }
 
 func proc_WRITE_FONT(cdg_pack []byte) {
-	var local_vram = internal_vram
-	var local_dirty = internal_dirty_blocks
 	// Hacky hack to play channels 0 and 1 only... Ideally, there should be a function and user option to get/set.
 	active_channels := 0x03
 	// First, get the channel...
@@ -518,8 +516,8 @@ func proc_WRITE_FONT(cdg_pack []byte) {
 			current_row := byte(0x00) // Subcode byte for current pixel row.
 			temp_pxl := byte(0x00)    // Decoded and packed 4bit pixel index values of current row.
 			for y_inc := 0; y_inc < 12; y_inc++ {
-				var pix_pos = y_inc*50 + start_pixel // Location of the first pixel of this row in linear VRAM.
-				current_row = cdg_pack[y_inc+8]      // Get the subcode byte for the current row.
+				pix_pos := y_inc*50 + start_pixel // Location of the first pixel of this row in linear VRAM.
+				current_row = cdg_pack[y_inc+8]   // Get the subcode byte for the current row.
 				temp_pxl = (current_indexes[(current_row>>5)&0x01] << 000)
 				temp_pxl |= (current_indexes[(current_row>>4)&0x01] << 004)
 				temp_pxl |= (current_indexes[(current_row>>3)&0x01] << 010)
@@ -529,15 +527,18 @@ func proc_WRITE_FONT(cdg_pack []byte) {
 
 				//NOTE: figure out truthy-ness of xor_var
 				if xor_var != 0 {
-					local_vram[pix_pos] ^= temp_pxl
+					internal_vram[pix_pos] ^= temp_pxl
 				} else {
-					local_vram[pix_pos] = temp_pxl
+					internal_vram[pix_pos] = temp_pxl
 				}
 			} // End of Y loop.
 			// Mark this block as needing an update.
-			local_dirty[y_location*50+x_location] = 0x01
+			internal_dirty_blocks[y_location*50+x_location] = 0x01
 		} // End of location check.
 	} // End of channel check.
+
+	fmt.Println(internal_vram)
+	log.Fatal("Quitting early")
 }
 
 func proc_DO_SCROLL(cdg_pack []byte) {

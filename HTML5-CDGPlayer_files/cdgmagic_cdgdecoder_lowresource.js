@@ -309,6 +309,8 @@ function CDGMagic_cdgdecoder( canvas_element, border_div )
             };
             vram_loc += 2;  // Skip the offscreen font blocks.
         };
+
+        console.log(local_vram);
     };
 
     function render_block_to_rgb(x_start, y_start)
