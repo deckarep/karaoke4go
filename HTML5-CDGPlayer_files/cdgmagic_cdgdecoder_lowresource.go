@@ -72,17 +72,22 @@ var (
 	internal_vram           = make([]byte, NUM_X_FONTS*VRAM_HEIGHT)
 	internal_dirty_blocks   = make([]byte, 900)
 	internal_rgba_context   = image.NewRGBA(image.Rect(0, 0, VISIBLE_WIDTH, VISIBLE_HEIGHT))
-	internal_rgba_imagedata = internal_rgba_imagedata.Pix
+	internal_rgba_imagedata = make([]uint8, 0)
 	internal_usedirtyrect   = true
 
-	internal_border_index = 0x00 // The current border palette index.
-	internal_current_pack = 0x00 //
+	internal_border_index = byte(0x00) // The current border palette index.
+	internal_current_pack = byte(0x00)
 
 	internal_border_dirty = false
 	internal_screen_dirty = false
 )
 
+func init() {
+	internal_rgba_imagedata = internal_rgba_context.Pix
+}
+
 func main() {
+
 	fmt.Println("Compiles baby!")
 }
 
@@ -111,6 +116,11 @@ func set_dirtyrect(requested_value) {
 }
 */
 
+//Not sure I need this function
+func putImageData(imageData []byte, x, y, dirtyX, dirtyY, dirtyWidth, dirtyHeight int) {
+
+}
+
 func redrawCanvas() {
 
 	if internal_border_dirty || internal_screen_dirty {
@@ -119,8 +129,8 @@ func redrawCanvas() {
 		clearDirtyBlocks()
 		// internal_rgba_context.putImageData(internal_rgba_imagedata, 0, 0)
 	} else {
-		var local_context = internal_rgba_context
-		var local_rgba_imagedata = internal_rgba_imagedata
+		//var local_context = internal_rgba_context
+		//var local_rgba_imagedata = internal_rgba_imagedata
 
 		update_needed := false
 		var blk = 0x00
@@ -133,16 +143,18 @@ func redrawCanvas() {
 
 			for x_blk := 1; x_blk <= 48; x_blk++ {
 
-				if internal_dirty_blocks[blk] {
+				if internal_dirty_blocks[blk] != 0 {
 
 					render_block_to_rgb(x_blk, y_blk)
 
 					if internal_usedirtyrect {
-						local_context.putImageData(local_rgba_imagedata, 0, 0,
-							(x_blk-1)*FONT_WIDTH,
-							(y_blk-1)*FONT_HEIGHT,
-							FONT_WIDTH,
-							FONT_HEIGHT)
+						//api call looks like this
+						//context.putImageData(imgData,x,y,dirtyX,dirtyY,dirtyWidth,dirtyHeight);
+						// local_context.putImageData(local_rgba_imagedata, 0, 0,
+						// 	(x_blk-1)*FONT_WIDTH,
+						// 	(y_blk-1)*FONT_HEIGHT,
+						// 	FONT_WIDTH,
+						// 	FONT_HEIGHT)
 					} else {
 						update_needed = true
 					}
@@ -164,7 +176,7 @@ func redrawCanvas() {
 }
 
 // Decode to pack playback_position, using cdg_file_data.
-func decode_packs(cdg_file_data []byte, playback_position int) {
+func decode_packs(cdg_file_data []byte, playback_position byte) {
 
 	for curr_pack := internal_current_pack; curr_pack < playback_position; curr_pack++ {
 
@@ -236,10 +248,10 @@ func render_screen_to_rgb() {
 	vis_width := 48
 	vis_height := VISIBLE_HEIGHT
 
-	vram_loc := 601           // Offset into VRAM array.
-	rgb_loc := 0x00           // Offset into RGBA array.
-	curr_rgb := 0x00          // RGBA value of current pixel.
-	curr_line_indices := 0x00 // Packed font row index values.
+	vram_loc := 601                 // Offset into VRAM array.
+	rgb_loc := 0x00                 // Offset into RGBA array.
+	curr_rgb := byte(0x00)          // RGBA value of current pixel.
+	curr_line_indices := byte(0x00) // Packed font row index values.
 
 	for y_pxl := 0; y_pxl < vis_height; y_pxl++ {
 		for x_pxl := 0; x_pxl < vis_width; x_pxl++ {
@@ -326,8 +338,8 @@ func render_block_to_rgb(x_start, y_start int) {
 	rgb_loc *= 4                                           // RGBA, 1 pxl = 4 bytes.
 
 	rgb_inc := (VISIBLE_WIDTH - FONT_WIDTH) * 4
-	curr_rgb := 0x00          // RGBA value of current pixel.
-	curr_line_indices := 0x00 // Packed font row index values.
+	curr_rgb := byte(0x00)          // RGBA value of current pixel.
+	curr_line_indices := byte(0x00) // Packed font row index values.
 
 	for vram_loc < vram_end {
 		curr_line_indices = internal_vram[vram_loc]                 // Get the current line segment indices.
@@ -418,9 +430,9 @@ func proc_LOAD_CLUT(cdg_pack []byte) {
 	pal_offset := (cdg_pack[1] & 0x01) * 8
 	// Step through the eight color indices, setting the RGB values.
 	for pal_inc := 0; pal_inc < 8; pal_inc++ {
-		temp_idx := pal_inc + pal_offset
-		temp_rgb := 0x00000000
-		temp_entry := 0x00000000
+		temp_idx := byte(pal_inc) + pal_offset
+		temp_rgb := byte(0x00000000)
+		temp_entry := byte(0x00000000)
 		// Set red.
 		temp_entry = (cdg_pack[pal_inc*2+4] & 0x3C) >> 2
 		temp_rgb |= (temp_entry * 17) << 020
@@ -432,8 +444,8 @@ func proc_LOAD_CLUT(cdg_pack []byte) {
 		temp_rgb |= (temp_entry * 17) << 000
 
 		// Put the full RGB value into the index position, but only if it's different.
-		if temp_rgb != innternal_palette[temp_idx] {
-			innternal_palette[temp_idx] = temp_rgb
+		if temp_rgb != internal_palette[temp_idx] {
+			internal_palette[temp_idx] = temp_rgb
 			internal_screen_dirty = true // The colors are now different, so we need to update the whole screen.
 
 			if temp_idx == internal_border_index {
@@ -452,22 +464,22 @@ func proc_WRITE_FONT(cdg_pack []byte) {
 	subcode_channel := ((cdg_pack[4] & 0x30) >> 2) | ((cdg_pack[5] & 0x30) >> 4)
 	xor_var := cdg_pack[1] & 0x20
 	// Then see if we should display it.
-	if (active_channels >> subcode_channel) & 0x01 {
+	if ((active_channels >> subcode_channel) & 0x01) != 0 {
 		x_location := cdg_pack[7] & 0x3F // Get horizontal font location.
 		y_location := cdg_pack[6] & 0x1F // Get vertical font location.
 
 		// Verify we're not going to overrun the boundaries (i.e. bad data from a scratched disc).
 		if (x_location <= 49) && (y_location <= 17) {
-			start_pixel := y_location*600 + x_location // Location of first pixel of this font in linear VRAM.
+			start_pixel := int(y_location)*600 + int(x_location) // Location of first pixel of this font in linear VRAM.
 			// NOTE: Profiling indicates charCodeAt() uses ~80% of the CPU consumed for this function.
 			// Caching these values reduces that to a negligible amount.
 
-			current_indexes = make([]byte, 2)
-			current_indexes[0] = (cdg_pack[4] & 0x0F)
-			current_indexes[1] = (cdg_pack[5] & 0x0F)
+			current_indexes := make([]byte, 2)
+			current_indexes[0] = cdg_pack[4] & 0x0F
+			current_indexes[1] = cdg_pack[5] & 0x0F
 
-			current_row := 0x00 // Subcode byte for current pixel row.
-			temp_pxl := 0x00    // Decoded and packed 4bit pixel index values of current row.
+			current_row := byte(0x00) // Subcode byte for current pixel row.
+			temp_pxl := byte(0x00)    // Decoded and packed 4bit pixel index values of current row.
 			for y_inc := 0; y_inc < 12; y_inc++ {
 				var pix_pos = y_inc*50 + start_pixel // Location of the first pixel of this row in linear VRAM.
 				current_row = cdg_pack[y_inc+8]      // Get the subcode byte for the current row.
@@ -492,9 +504,9 @@ func proc_WRITE_FONT(cdg_pack []byte) {
 }
 
 func proc_DO_SCROLL(cdg_pack []byte) {
-	direction := 0                        // H/V direction flag.
-	copy_flag = (cdg_pack[1] & 0x08) >> 3 // Type of copy (memory preset or copy).
-	color = cdg_pack[4] & 0x0F            // Color index to use for preset type.
+	direction := byte(0)                   // H/V direction flag.
+	copy_flag := (cdg_pack[1] & 0x08) >> 3 // Type of copy (memory preset or copy).
+	color := cdg_pack[4] & 0x0F            // Color index to use for preset type.
 
 	//TODOD: check what value of direction is
 	// Process horizontal commands.
@@ -510,5 +522,102 @@ func proc_DO_SCROLL(cdg_pack []byte) {
 	internal_screen_dirty = true // Entire screen needs to be redrawn.
 }
 
-//TODO: proc_VRAM_HSCROLL
-//TODO: proc_VRAM_VSCROLL
+func proc_VRAM_HSCROLL(direction, copy_flag, color byte) {
+
+	buf := byte(0)
+	line_color := fill_line_with_palette_index(color)
+
+	if direction == 0x02 {
+		// Step through the lines one at a time...
+		for y_src := 0; y_src < (50 * 216); y_src += 50 {
+			y_start := y_src
+			buf = internal_vram[y_start]
+
+			for x_src := y_start + 1; x_src < y_start+50; x_src++ {
+				internal_vram[x_src-1] = internal_vram[x_src]
+			}
+
+			if copy_flag != 0 {
+				internal_vram[y_start+49] = buf
+			} else {
+				internal_vram[y_start+49] = line_color
+			}
+		}
+	} else if direction == 0x01 {
+		// Step through the lines on at a time.
+		for y_src := 0; y_src < (50 * 216); y_src += 50 {
+			// Copy the last six lines to the buffer.
+			y_start := y_src
+			buf = internal_vram[y_start+49]
+
+			for x_src := y_start + 48; x_src >= y_start; x_src-- {
+				internal_vram[x_src+1] = internal_vram[x_src]
+			}
+
+			if copy_flag != 0 {
+				internal_vram[y_start] = buf
+			} else {
+				internal_vram[y_start] = line_color
+			}
+		}
+	}
+}
+
+func proc_VRAM_VSCROLL(direction, copy_flag, color byte) {
+
+	offscreen_size := NUM_X_FONTS * FONT_HEIGHT
+	buf := make([]byte, offscreen_size)
+
+	line_color := fill_line_with_palette_index(color)
+
+	if direction == 0x02 {
+		dst_idx := 0 // Buffer destination starts at 0.
+		// Copy the top 300x12 pixels into the buffer.
+		for src_idx := 0; src_idx < offscreen_size; src_idx++ {
+			buf[dst_idx] = internal_vram[src_idx]
+			dst_idx++
+		}
+
+		dst_idx = 0 // Destination starts at the first line.
+
+		for src_idx := offscreen_size; src_idx < (50 * 216); src_idx++ {
+			internal_vram[dst_idx] = internal_vram[src_idx]
+			dst_idx++
+		}
+
+		dst_idx = NUM_X_FONTS * 204 // Destination begins at line 204.
+
+		if copy_flag != 0 {
+			for src_idx := 0; src_idx < offscreen_size; src_idx++ {
+				internal_vram[dst_idx] = buf[src_idx]
+				dst_idx++
+			}
+		} else {
+			for src_idx := 0; src_idx < offscreen_size; src_idx++ {
+				internal_vram[dst_idx] = line_color
+				dst_idx++
+			}
+		}
+	} else if direction == 0x01 {
+		dst_idx := 0 // Buffer destination starts at 0.
+		// Copy the bottom 300x12 pixels into the buffer.
+		for src_idx := (50 * 204); src_idx < (50 * 216); src_idx++ {
+			buf[dst_idx] = internal_vram[src_idx]
+			dst_idx++
+		}
+
+		for src_idx := (50 * 204) - 1; src_idx > 0; src_idx-- {
+			internal_vram[src_idx+offscreen_size] = internal_vram[src_idx]
+		}
+
+		if copy_flag != 0 {
+			for src_idx := 0; src_idx < offscreen_size; src_idx++ {
+				internal_vram[src_idx] = buf[src_idx]
+			}
+		} else {
+			for src_idx := 0; src_idx < offscreen_size; src_idx++ {
+				internal_vram[src_idx] = line_color
+			}
+		}
+	}
+}
