@@ -80,7 +80,7 @@ var (
 	internal_rgba_imagedata = make([]uint8, 0)
 	internal_usedirtyrect   = true
 
-	internal_border_index = byte(0x00) // The current border palette index.
+	internal_border_index = 0x00 // The current border palette index.
 	internal_current_pack = 0x00
 
 	internal_border_dirty = false
@@ -95,11 +95,13 @@ func main() {
 
 	fmt.Println("Compiles baby!")
 
+	//load data
 	cdg_file_data, err := ioutil.ReadFile("../SC-SBI-REMIX - Billy Idol - Rebel Yell.cdg")
 	if err != nil {
 		log.Fatal("Couldn't read .cdg file")
 	}
 
+	//loop through some bytes
 	for i := 0; i < 19000; i++ {
 		decode_packs(cdg_file_data, i)
 		redrawCanvas()
@@ -224,16 +226,13 @@ func decode_packs(cdg_file_data []byte, playback_position int) {
 			case BORDER_PRESET:
 				proc_BORDER_PRESET(this_pack)
 
-			case LOAD_CLUT_LO:
-			case LOAD_CLUT_HI:
+			case LOAD_CLUT_LO, LOAD_CLUT_HI:
 				proc_LOAD_CLUT(this_pack)
 
-			case COPY_FONT:
-			case XOR_FONT:
+			case COPY_FONT, XOR_FONT:
 				proc_WRITE_FONT(this_pack)
 
-			case SCROLL_PRESET:
-			case SCROLL_COPY:
+			case SCROLL_PRESET, SCROLL_COPY:
 				proc_DO_SCROLL(this_pack)
 
 			}
@@ -447,7 +446,7 @@ func proc_BORDER_PRESET(cdg_pack []byte) {
 	// NOTE: The "border" is actually a DIV element, which can be very expensive to change in some browsers.
 	// This somewhat bizarre check ensures that the DIV is only touched if the actual RGB color is different,
 	// but the border index variable is always set... A similar check is also performed during palette update.
-	new_border_index := cdg_pack[4] & 0x3F // Get the border index from subcode.
+	new_border_index := int(cdg_pack[4] & 0x3F) // Get the border index from subcode.
 	// Check if the new border **RGB** color is different from the old one.
 	if internal_palette[new_border_index] != internal_palette[internal_border_index] {
 		internal_border_dirty = true // Border needs updating.
@@ -463,10 +462,10 @@ func proc_MEMORY_PRESET(cdg_pack []byte) {
 func proc_LOAD_CLUT(cdg_pack []byte) {
 
 	// If instruction is 0x1E then 8*0=0, if 0x1F then 8*1=8 for offset.
-	pal_offset := (cdg_pack[1] & 0x01) * 8
+	pal_offset := int((cdg_pack[1] & 0x01) * 8)
 	// Step through the eight color indices, setting the RGB values.
 	for pal_inc := 0; pal_inc < 8; pal_inc++ {
-		temp_idx := byte(pal_inc) + pal_offset
+		temp_idx := pal_inc + pal_offset
 		temp_rgb := byte(0x00000000)
 		temp_entry := byte(0x00000000)
 		// Set red.
@@ -489,6 +488,8 @@ func proc_LOAD_CLUT(cdg_pack []byte) {
 			} // The border color has changed.
 		}
 	}
+
+	fmt.Println(internal_palette)
 }
 
 func proc_WRITE_FONT(cdg_pack []byte) {
