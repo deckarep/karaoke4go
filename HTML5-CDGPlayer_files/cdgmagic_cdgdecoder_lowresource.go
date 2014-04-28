@@ -114,7 +114,7 @@ func main() {
 }
 
 func snap() {
-	out_filename := "blank.png"
+	out_filename := "output/blank.png"
 	out_file, err := os.Create(out_filename)
 	if err != nil {
 		log.Fatal(err)
