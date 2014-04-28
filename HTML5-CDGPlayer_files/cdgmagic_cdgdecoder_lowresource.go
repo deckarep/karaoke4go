@@ -105,7 +105,7 @@ func main() {
 	fmt.Println("File Length: ", len(cdg_file_data))
 
 	//loop through some bytes
-	for i := 0; i < 250000; i++ {
+	for i := 0; i < 1000; i++ {
 		decode_packs(cdg_file_data, i)
 		redrawCanvas()
 	}
@@ -156,8 +156,8 @@ func putImageData(imageData []byte, x, y, dirtyX, dirtyY, dirtyWidth, dirtyHeigh
 
 func redrawCanvas() {
 
-	if internal_border_dirty || internal_screen_dirty {
-		// render_screen_to_rgb()
+	if internal_screen_dirty {
+		render_screen_to_rgb()
 		internal_screen_dirty = false
 		clearDirtyBlocks()
 		// internal_rgba_context.putImageData(internal_rgba_imagedata, 0, 0)
@@ -176,24 +176,24 @@ func redrawCanvas() {
 
 			for x_blk := 1; x_blk <= 48; x_blk++ {
 
-				if internal_dirty_blocks[blk] != 0 {
+				//this dirty logic not quite working!!!
+				//if internal_dirty_blocks[blk] != 0 {
+				render_block_to_rgb(x_blk, y_blk)
 
-					render_block_to_rgb(x_blk, y_blk)
-
-					if internal_usedirtyrect {
-						//api call looks like this
-						//context.putImageData(imgData,x,y,dirtyX,dirtyY,dirtyWidth,dirtyHeight);
-						// local_context.putImageData(local_rgba_imagedata, 0, 0,
-						// 	(x_blk-1)*FONT_WIDTH,
-						// 	(y_blk-1)*FONT_HEIGHT,
-						// 	FONT_WIDTH,
-						// 	FONT_HEIGHT)
-					} else {
-						update_needed = true
-					}
-
-					internal_dirty_blocks[blk] = 0x00
+				if internal_usedirtyrect {
+					//api call looks like this
+					//context.putImageData(imgData,x,y,dirtyX,dirtyY,dirtyWidth,dirtyHeight);
+					// local_context.putImageData(local_rgba_imagedata, 0, 0,
+					// 	(x_blk-1)*FONT_WIDTH,
+					// 	(y_blk-1)*FONT_HEIGHT,
+					// 	FONT_WIDTH,
+					// 	FONT_HEIGHT)
+				} else {
+					update_needed = true
 				}
+
+				internal_dirty_blocks[blk] = 0x00
+				//}
 				//Note: test the post-increment
 				blk++
 			}
