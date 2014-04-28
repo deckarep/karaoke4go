@@ -107,13 +107,14 @@ func main() {
 
 	fmt.Println("File Length: ", len(cdg_file_data))
 
+	//TODO: fix bug, for some reason can't loop over all the bytes of the len(cdg_file_data)
 	//loop through some bytes
 	for i := 0; i < 20000; i++ {
 		decode_packs(cdg_file_data, i)
 		redrawCanvas()
-		if i%500 == 0 {
-			snap(i)
-		}
+		//if i%100 == 0 {
+		snap(i)
+		//}
 	}
 
 	//This command works, outputting the images as a video
