@@ -75,7 +75,7 @@ const (
 var (
 	//I think they should probably be 32 bit colors based on the proc_LOAD_CLUT function
 	internal_palette        = make([]int, PALETTE_ENTRIES)
-	internal_vram           = make([]byte, NUM_X_FONTS*VRAM_HEIGHT)
+	internal_vram           = make([]int, NUM_X_FONTS*VRAM_HEIGHT)
 	internal_dirty_blocks   = make([]byte, 900)
 	internal_rgba_context   = image.NewRGBA(image.Rect(0, 0, VISIBLE_WIDTH, VISIBLE_HEIGHT))
 	internal_rgba_imagedata = make([]uint8, 0)
@@ -102,8 +102,10 @@ func main() {
 		log.Fatal("Couldn't read .cdg file")
 	}
 
+	fmt.Println("File Length: ", len(cdg_file_data))
+
 	//loop through some bytes
-	for i := 0; i < 30000; i++ {
+	for i := 0; i < 250000; i++ {
 		decode_packs(cdg_file_data, i)
 		redrawCanvas()
 	}
@@ -230,8 +232,11 @@ func decode_packs(cdg_file_data []byte, playback_position int) {
 			case LOAD_CLUT_LO, LOAD_CLUT_HI:
 				proc_LOAD_CLUT(this_pack)
 
-			case COPY_FONT, XOR_FONT:
-				proc_WRITE_FONT(this_pack)
+			case COPY_FONT:
+				proc_WRITE_FONT(this_pack, false)
+
+			case XOR_FONT:
+				proc_WRITE_FONT(this_pack, true)
 
 			case SCROLL_PRESET, SCROLL_COPY:
 				proc_DO_SCROLL(this_pack)
@@ -242,7 +247,7 @@ func decode_packs(cdg_file_data []byte, playback_position int) {
 	internal_current_pack = playback_position
 }
 
-func fill_line_with_palette_index(requested_index byte) byte {
+func fill_line_with_palette_index(requested_index int) int {
 
 	adjusted_value := requested_index          // Pixel 0
 	adjusted_value |= (requested_index << 004) // Pixel 1
@@ -260,7 +265,7 @@ func clearDirtyBlocks() {
 	}
 }
 
-func clearVRAM(colorIndex byte) {
+func clearVRAM(colorIndex int) {
 
 	packed_line_value := fill_line_with_palette_index(colorIndex)
 
@@ -276,10 +281,10 @@ func render_screen_to_rgb() {
 	vis_width := 48
 	vis_height := VISIBLE_HEIGHT
 
-	vram_loc := 601                 // Offset into VRAM array.
-	rgb_loc := 0x00                 // Offset into RGBA array.
-	curr_rgb := 0x00                // RGBA value of current pixel.
-	curr_line_indices := byte(0x00) // Packed font row index values.
+	vram_loc := 601           // Offset into VRAM array.
+	rgb_loc := 0x00           // Offset into RGBA array.
+	curr_rgb := 0x00          // RGBA value of current pixel.
+	curr_line_indices := 0x00 // Packed font row index values.
 
 	for y_pxl := 0; y_pxl < vis_height; y_pxl++ {
 		for x_pxl := 0; x_pxl < vis_width; x_pxl++ {
@@ -374,8 +379,8 @@ func render_block_to_rgb(x_start, y_start int) {
 	rgb_loc *= 4                                           // RGBA, 1 pxl = 4 bytes.
 
 	rgb_inc := (VISIBLE_WIDTH - FONT_WIDTH) * 4
-	curr_rgb := 0x00                // RGBA value of current pixel.
-	curr_line_indices := byte(0x00) // Packed font row index values.
+	curr_rgb := 0x00          // RGBA value of current pixel.
+	curr_line_indices := 0x00 // Packed font row index values.
 
 	for vram_loc < vram_end {
 		curr_line_indices = internal_vram[vram_loc]                       // Get the current line segment indices.
@@ -457,7 +462,7 @@ func proc_BORDER_PRESET(cdg_pack []byte) {
 }
 
 func proc_MEMORY_PRESET(cdg_pack []byte) {
-	clearVRAM(cdg_pack[4] & 0x3F)
+	clearVRAM(int(cdg_pack[4] & 0x3F))
 }
 
 //Verified function works accordingly per JS version.
@@ -492,12 +497,12 @@ func proc_LOAD_CLUT(cdg_pack []byte) {
 	}
 }
 
-func proc_WRITE_FONT(cdg_pack []byte) {
+func proc_WRITE_FONT(cdg_pack []byte, xor_var bool) {
 	// Hacky hack to play channels 0 and 1 only... Ideally, there should be a function and user option to get/set.
 	active_channels := 0x03
 	// First, get the channel...
 	subcode_channel := ((cdg_pack[4] & 0x30) >> 2) | ((cdg_pack[5] & 0x30) >> 4)
-	xor_var := cdg_pack[1] & 0x20
+
 	// Then see if we should display it.
 	if ((active_channels >> subcode_channel) & 0x01) != 0 {
 		x_location := cdg_pack[7] & 0x3F // Get horizontal font location.
@@ -509,15 +514,15 @@ func proc_WRITE_FONT(cdg_pack []byte) {
 			// NOTE: Profiling indicates charCodeAt() uses ~80% of the CPU consumed for this function.
 			// Caching these values reduces that to a negligible amount.
 
-			current_indexes := make([]byte, 2)
-			current_indexes[0] = cdg_pack[4] & 0x0F
-			current_indexes[1] = cdg_pack[5] & 0x0F
+			current_indexes := make([]int, 2)
+			current_indexes[0] = int(cdg_pack[4]) & 0x0F
+			current_indexes[1] = int(cdg_pack[5]) & 0x0F
 
-			current_row := byte(0x00) // Subcode byte for current pixel row.
-			temp_pxl := byte(0x00)    // Decoded and packed 4bit pixel index values of current row.
+			current_row := 0x00 // Subcode byte for current pixel row.
+			temp_pxl := 0x00    // Decoded and packed 4bit pixel index values of current row.
 			for y_inc := 0; y_inc < 12; y_inc++ {
-				pix_pos := y_inc*50 + start_pixel // Location of the first pixel of this row in linear VRAM.
-				current_row = cdg_pack[y_inc+8]   // Get the subcode byte for the current row.
+				pix_pos := y_inc*50 + start_pixel    // Location of the first pixel of this row in linear VRAM.
+				current_row = int(cdg_pack[y_inc+8]) // Get the subcode byte for the current row.
 				temp_pxl = (current_indexes[(current_row>>5)&0x01] << 000)
 				temp_pxl |= (current_indexes[(current_row>>4)&0x01] << 004)
 				temp_pxl |= (current_indexes[(current_row>>3)&0x01] << 010)
@@ -526,7 +531,7 @@ func proc_WRITE_FONT(cdg_pack []byte) {
 				temp_pxl |= (current_indexes[(current_row>>0)&0x01] << 024)
 
 				//NOTE: figure out truthy-ness of xor_var
-				if xor_var != 0 {
+				if xor_var {
 					internal_vram[pix_pos] ^= temp_pxl
 				} else {
 					internal_vram[pix_pos] = temp_pxl
@@ -536,15 +541,12 @@ func proc_WRITE_FONT(cdg_pack []byte) {
 			internal_dirty_blocks[y_location*50+x_location] = 0x01
 		} // End of location check.
 	} // End of channel check.
-
-	fmt.Println(internal_vram)
-	log.Fatal("Quitting early")
 }
 
 func proc_DO_SCROLL(cdg_pack []byte) {
 	direction := byte(0)                   // H/V direction flag.
 	copy_flag := (cdg_pack[1] & 0x08) >> 3 // Type of copy (memory preset or copy).
-	color := cdg_pack[4] & 0x0F            // Color index to use for preset type.
+	color := int(cdg_pack[4] & 0x0F)       // Color index to use for preset type.
 
 	//TODOD: check what value of direction is
 	// Process horizontal commands.
@@ -560,9 +562,9 @@ func proc_DO_SCROLL(cdg_pack []byte) {
 	internal_screen_dirty = true // Entire screen needs to be redrawn.
 }
 
-func proc_VRAM_HSCROLL(direction, copy_flag, color byte) {
+func proc_VRAM_HSCROLL(direction byte, copy_flag byte, color int) {
 
-	buf := byte(0)
+	buf := 0
 	line_color := fill_line_with_palette_index(color)
 
 	if direction == 0x02 {
@@ -601,10 +603,10 @@ func proc_VRAM_HSCROLL(direction, copy_flag, color byte) {
 	}
 }
 
-func proc_VRAM_VSCROLL(direction, copy_flag, color byte) {
+func proc_VRAM_VSCROLL(direction byte, copy_flag byte, color int) {
 
 	offscreen_size := NUM_X_FONTS * FONT_HEIGHT
-	buf := make([]byte, offscreen_size)
+	buf := make([]int, offscreen_size)
 
 	line_color := fill_line_with_palette_index(color)
 
