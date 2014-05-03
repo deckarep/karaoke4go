@@ -3,6 +3,8 @@ karaoke4go
 
 karaoke4go is an extremely *early* alpha prototype of the CDG file format that was developed by Phillips and Sony entertainment to display timed lyrics along with music for the purpose of getting drunk with your friends and singing horribly into a mic.
 
+It was delivered on audio Compact Discs and took advantage of subcode channels R through W where 16-color (4-bit) graphics could be rendered onto a 300x216 pixel size bitmap.
+
 ## screenshots
 
 ![Title Screen](../master/screenshots/title.png?raw=true)
