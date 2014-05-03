@@ -9,45 +9,6 @@ import (
 	"os"
 )
 
-/*
- *  This file is part of CD+Graphics Magic.
- *
- *  CD+Graphics Magic is free software: you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License as
- *  published by the Free Software Foundation, either version 2 of the
- *  License, or (at your option) any later version.
- *
- *  CD+Graphics Magic is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with CD+Graphics Magic. If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
-/*
- *  This class instantiates an HTML5/Canvas CD+Graphics decoder object.
- *
- *  This is the "low resource" version, and should be very close
- *  to as fast as possible with JavaScript.
- *
- *  The difference between the "low resource" and normal version
- *  is that this one packs each 6 pixel font line in to one
- *  array value, unrolling some loops and minimizing array lookups.
- *
- *  The only concession made is lack of H/V "offset" support used
- *  for smooth scrolling.
- *  Block based scrolls *are* still supported, however, so the basic
- *  intent of the graphics is presented, but less than ideally.
- *
- *  It is recommended for CPU constrained (eg. mobile or embedded) devices.
- *
- */
-
-// Useful enums for CD+Graphics...
-
 const (
 	VRAM_SIZE       = 300 * 216 // Total linear size of VRAM, in pixels.
 	VRAM_WIDTH      = 300       // Width (or pitch) of VRAM, in pixels.
@@ -97,10 +58,8 @@ func init() {
 
 func main() {
 
-	fmt.Println("Compiles baby!")
-
 	//load data
-	cdg_file_data, err := ioutil.ReadFile("../SC-SBI-REMIX - Billy Idol - Rebel Yell.cdg")
+	cdg_file_data, err := ioutil.ReadFile("cdg/SC-SBI-REMIX - Billy Idol - Rebel Yell.cdg")
 	if err != nil {
 		log.Fatal("Couldn't read .cdg file")
 	}
@@ -112,9 +71,9 @@ func main() {
 	for i := 0; i < 20000; i++ {
 		decode_packs(cdg_file_data, i)
 		redrawCanvas()
-		//if i%100 == 0 {
-		snap(i)
-		//}
+		if i%100 == 0 {
+			snap(i)
+		}
 	}
 
 	//This command works, outputting the images as a video
@@ -123,7 +82,7 @@ func main() {
 }
 
 func snap(count int) {
-	out_filename := fmt.Sprintf("output/blank-%d.png", imageCount)
+	out_filename := fmt.Sprintf("screenshots/blank-%d.png", imageCount)
 	out_file, err := os.Create(out_filename)
 	if err != nil {
 		log.Fatal(err)
