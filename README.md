@@ -20,7 +20,7 @@ Why not? Go is a fantastic language and this was an excuse to have some fun with
 
 ## a partial port
 
-So, I've actually built this from scratch twice before once using raw C and the popular SDL library.  And the second time, I built this in Flash way back when the raw bitmap api was introduced.  This time around, I did get a little lazy and actually ported this version from the excellent: CDGMagic HTML5 canvas based version locatated at: http://cdgmagic.sourceforge.net/html5_cdgplayer/  This version actually works beautifully and runs smooth.  Again, consider this version a fun excercize in Go...at least for now.
+So, I've actually built this from scratch twice before once using raw C and the popular SDL library.  And the second time, I built this in Flash way back when the raw bitmap api was introduced.  This time around, I did get a little lazy and actually ported this version from the excellent: CDGMagic HTML5 canvas based version located at: http://cdgmagic.sourceforge.net/html5_cdgplayer/  This version actually works beautifully and runs smooth.  Again, consider this version a fun excercize in Go...at least for now.
 
 ## caveats
 
