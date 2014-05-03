@@ -3,23 +3,23 @@ karaoke4go
 
 karaoke4go is an extremely *early* alpha prototype of the CDG file format that was developed by Phillips and Sony entertainment to display timed lyrics along with music for the purpose of getting drunk with your friends and singing horribly into a mic.
 
-screenshots
-===========
+## screenshots
+
+![Title Screen](../master/screenshots/intro.png?raw=true)
+![Begin Screen](../master/screenshots/a.png?raw=true)
+![Lyrics Screen](../master/screenshots/b.png?raw=true)
 
 
-
-why?
-====
+## why?
 
 Why not? Go is a fantastic language and this was an excuse to have some fun with it while exploring the image packages.  Unfortunately, Go doesn't have a native package for rendering GUIs so this package currently only renders a series of .png images.  Eventually, the idea is to utilize some community driven package such as GoQML to render the graphics in realtime so this thing actually works.
 
-a partial port
-==============
+## a partial port
 
 So, I've actually built this from scratch twice before once using raw C and the popular SDL library.  And the second time, I built this in Flash way back when the raw bitmap api was introduced.  This time around, I did get a little lazy and actually ported this version from the excellent: CDGMagic HTML5 canvas based version locatated at: http://cdgmagic.sourceforge.net/html5_cdgplayer/  This version actually works beautifully and runs smooth.  Again, consider this version a fun excercize in Go...at least for now.
 
-caveats
-========
+## caveats
+
 
 * It's not a typical Go package yet, so you can't import it
 * There are currently no tests
@@ -29,8 +29,7 @@ caveats
 * There is no music implementation yet
 * It has not been optimized yet
 
-contributions
-=============
+## contributions
 
 * are encouraged
 
