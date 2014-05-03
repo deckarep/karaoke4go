@@ -5,9 +5,11 @@ karaoke4go is an extremely *early* alpha prototype of the CDG file format that w
 
 ## screenshots
 
-![Title Screen](../master/screenshots/intro.png?raw=true)
-![Begin Screen](../master/screenshots/a.png?raw=true)
-![Lyrics Screen](../master/screenshots/b.png?raw=true)
+![Title Screen](../master/screenshots/title.png?raw=true)
+
+![Key Screen](../master/screenshots/key.png?raw=true)
+
+![Intro Screen](../master/screenshots/intro.png?raw=true)
 
 
 ## why?
