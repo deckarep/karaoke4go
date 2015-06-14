@@ -1,2 +1,4 @@
 *.cdg
 *.mp3
+*.swp
+.DS_Store
