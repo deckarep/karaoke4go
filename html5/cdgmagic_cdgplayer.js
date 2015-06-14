@@ -64,8 +64,9 @@ function set_file_prefix(file_url_prefixes)
     // Ignore this call if we weren't given a file name.
     if (file_url_prefixes == "")  { return; };
     // Construct the file paths.
-    var audio_file_prefix = file_url_prefixes.split(":", 2)[0];
-    var cdg_file_prefix = file_url_prefixes.split(":", 2)[1];
+    // Ensure the subfolder below: karaoke/ has the cdg/mp3 media files
+    var audio_file_prefix = "karaoke/" + file_url_prefixes.split(":", 2)[0];
+    var cdg_file_prefix = "karaoke/" + file_url_prefixes.split(":", 2)[1];
     // Prepend the media files source directoy.
     // file_url_prefix = "media/" + file_url_prefix;
     // Stop, reset, and blank all the CD+G related stuff.
