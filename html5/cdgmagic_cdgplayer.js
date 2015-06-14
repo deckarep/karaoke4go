@@ -65,7 +65,7 @@ function set_file_prefix(file_url_prefixes)
     if (file_url_prefixes == "")  { return; };
     // Construct the file paths.
     var audio_file_prefix = file_url_prefixes.split(":", 2)[0];
-    var   cdg_file_prefix = file_url_prefixes.split(":", 2)[1];
+    var cdg_file_prefix = file_url_prefixes.split(":", 2)[1];
     // Prepend the media files source directoy.
     // file_url_prefix = "media/" + file_url_prefix;
     // Stop, reset, and blank all the CD+G related stuff.
