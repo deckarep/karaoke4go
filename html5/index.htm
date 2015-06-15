@@ -1,9 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0048)http://cdgmagic.sourceforge.net/html5_cdgplayer/ -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-
-
 <meta name="description" content="Possibly the first and only HTML5/JavaScript CD+G player, showing example content created with free, open source CD+Graphics Magic.">
 
 <title>CD+Graphics Magic :: HTML5 CD+G Player</title>
@@ -42,14 +38,17 @@ function toggle_2x_mode()
     var cnvs = document.getElementById("cdg_canvas");
     var audi = document.getElementById("cdg_audio");
 
-    audi.style.width  = (zoom_mode) ? 648 + "px" : 324 + "px";
+	// Works, you can change this number to 2 or 3 or whatever fits beyatch!
+	var scale_factor = 2;
 
-    brdr.style.width  = (zoom_mode) ? 648 + "px" : 324 + "px";
-    brdr.style.height = (zoom_mode) ? 432 + "px" : 216 + "px";
+    audi.style.width  = (zoom_mode) ? (324 * scale_factor) + "px" : 324 + "px";
 
-    cnvs.style.width  = (zoom_mode) ? 576 + "px" : 288 + "px";
-    cnvs.style.height = (zoom_mode) ? 384 + "px" : 192 + "px";
-    cnvs.style.padding= (zoom_mode) ?  24 + "px" :  12 + "px";
+    brdr.style.width  = (zoom_mode) ? (324 * scale_factor) + "px" : 324 + "px";
+    brdr.style.height = (zoom_mode) ? (216 * scale_factor) + "px" : 216 + "px";
+
+    cnvs.style.width  = (zoom_mode) ? (288 * scale_factor) + "px" : 288 + "px";
+    cnvs.style.height = (zoom_mode) ? (192 * scale_factor) + "px" : 192 + "px";
+    cnvs.style.padding= (zoom_mode) ?  (12 * scale_factor) + "px" :  12 + "px";
 };
 </script>
 
@@ -72,8 +71,6 @@ function toggle_2x_mode()
     </div><!--end left_navigation-->
 
     <div class="right_content">
-        Full and Split Page Cut/Fade modes are planned features still in development.
-        <br>All other modes are demonstrated exactly as implemented in Experimental 001b.<br><br><br>
         <center><!-- <center> is probably evil, but at least it WORKS... TODO: Determine the proper margin-fu to banish said evil.-->
         <!-- Note: The audio player is above media display because some default interfaces have controls that extend past the top of the player. -->
         <audio id="cdg_audio" style="width:324px">
@@ -105,20 +102,7 @@ function toggle_2x_mode()
 			<option value="Coldplay - Sky Full Of Stars:Coldplay - Sky Full Of Stars">Coldplay - Sky Full Of Stars</option>
         </select>
         </center>
-        <br><br>This JavaScript based player should work in most HTML5 compatible browsers supporting both the &lt;canvas&gt; and &lt;audio&gt; (note: "Sample Project" 01-04 are silent) tags, including many mobile and embedded devices.
-        <br>Double-click "screen area" to toggle 2x zoom mode (which may consume large amounts of CPU time on certain hardware/software configurations).
-        <br><br>It is, like the main application, licensed under the terms of the <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GNU GPL v2</a> (or later).
-        <br>(However, please do not hotlink the script from this site... COPY IT TO YOUR WEB SERVER!)
-        <br><br>Sync and timing accuracy, unfortunately, varies with that of the underlying browser implementation.
-        <br>Perfectly smooth scrolling is not implemented in this version for performance reasons, although block based scrolls work correctly.
-        <br><br>
-        <a href="http://www.jonathancoulton.com/songdetails/Flickr">"Flickr"</a> by <a href="http://www.jonathancoulton.com/">Jonathan Coulton</a> used under <a href="http://creativecommons.org/licenses/by-nc/3.0/">Creative Commons Attribution-NonCommercial 3.0 Unported</a> license.
-        <br><br>
-        <a href="http://ccmixter.org/files/Loveshadow/26157">"Heart on Redial"</a> by <a href="http://ccmixter.org/people/Loveshadow">Loveshadow</a> used under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported</a> license.
-        <br>
-        <a href="http://cdgmagic.sourceforge.net/html5_cdgplayer/loveshadow_heartonredial_credits.html">Loveshadow - Heart on Redial Complete Music and Images Credits and Licenses Table</a>
     </div><!--end right_content-->
 
-<div class="footer">
-</div>
+<div class="footer"></div>
 </body></html>
