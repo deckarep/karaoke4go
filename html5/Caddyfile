@@ -1,3 +1,5 @@
+# Run caddy in this directory and it will pick up Caddyfile automatically
+# Don't add caddy to the repo, just invoke it from where the binary is
 localhost:2020
 gzip
 log caddy.log
