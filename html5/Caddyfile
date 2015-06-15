@@ -1,0 +1,5 @@
+localhost:2020
+gzip
+log caddy.log
+# The root of the site
+root . 
