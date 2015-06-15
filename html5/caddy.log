@@ -1,4 +1,0 @@
-127.0.0.1 - [14/Jun/2015:21:16:02 -0700] "GET / HTTP/1.1" 304 0
-127.0.0.1 - [14/Jun/2015:21:16:02 -0700] "GET /cdgmagic_cdgplayer.js HTTP/1.1" 304 0
-127.0.0.1 - [14/Jun/2015:21:16:02 -0700] "GET /cdgmagic_cdgdecoder_lowresource.js HTTP/1.1" 304 0
-127.0.0.1 - [14/Jun/2015:21:16:05 -0700] "GET /media/Coldplay%20-%20Sky%20Full%20Of%20Stars.ogg HTTP/1.1" 200 0
