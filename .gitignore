@@ -2,3 +2,4 @@
 *.mp3
 *.swp
 .DS_Store
+*.log
